@@ -33,7 +33,7 @@ def to_json(table, connection=connection):
     cursor.execute(sql)
     rows = cursor.fetchall()
     data = [dict(row) for row in rows]
-    with open('data.json', 'w') as f:
+    with open(f'{table}.json', 'w') as f:
         json.dump(data, f)
     cursor.close()
     connection.close()

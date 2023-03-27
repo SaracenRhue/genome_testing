@@ -2,4 +2,5 @@ from config import connection
 import utils
 
 print(utils.get_table_names())
-utils.to_json('defaultDb')
+#hubSearchText
+utils.to_json('wikiTrack')
