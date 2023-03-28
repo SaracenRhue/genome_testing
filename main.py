@@ -2,5 +2,5 @@ from config import connection
 import utils
 
 print(utils.get_table_names())
-#hubSearchText
+#hubSearchText table to big
 utils.to_json('wikiTrack')
