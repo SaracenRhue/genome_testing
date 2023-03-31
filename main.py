@@ -11,14 +11,22 @@ for file in os.listdir('./genome_files'):
         data = f.read()
         #create 2d array of the data with each row being a array
         data = [i.split() for i in data.split('\n')]
-        data.remove(data[0])
+        
+
         for line in data:
             if line == []:
                 data.remove(line)
+        # remove additional column if it exists
+        if data[0][0] == '#bin':
+            for line in data:
+                    line.pop(0)
+        data.pop(0)
+    
 
     genome = {'variants': []}
     for i in range(len(data)):
         exon_starts = data[i][8][:-1]
+        
         exon_ends = data[i][9][:-1]
         exon_starts = [int(i) for i in exon_starts.split(',')]
         exon_ends = [int(i) for i in exon_ends.split(',')]

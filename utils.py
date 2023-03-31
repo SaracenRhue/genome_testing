@@ -10,3 +10,4 @@ def generate_sequence(exon_starts=[], exon_ends=[]):
             genome[i] = 1
     
     return genome
+
