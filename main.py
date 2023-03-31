@@ -3,4 +3,4 @@ import utils
 
 print(utils.get_table_names())
 #hubSearchText table to big
-utils.to_json('wikiTrack')
+utils.to_json('hubSearchText')
