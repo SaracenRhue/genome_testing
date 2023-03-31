@@ -1,41 +1,12 @@
-from config import connection
-import json
-import yaml
-
-def get_table_names(connection=connection):
-    '''Get a list of table names in the current database'''
-    cursor = connection.cursor()
-    sql = 'SHOW TABLES'
-    cursor.execute(sql)
-    tables = cursor.fetchall()
-    cursor.close()
-    result = []
-    for table in tables:
-        result.append(table['Tables_in_hgcentral'])
-    return result
-
-def to_yaml(table, connection=connection):
-    '''Convert a table to YAML'''
-    cursor = connection.cursor()
-    sql = f'SELECT * FROM {table}'
-    cursor.execute(sql)
-    rows = cursor.fetchall()
-    data = [dict(row) for row in rows]
-    with open('data.yaml', 'w') as f:
-        yaml.dump(data, f)
-    cursor.close()
-    connection.close()
-
-def to_json(table, connection=connection):
-    '''Convert a table to JSON'''
-    cursor = connection.cursor()
-    sql = f'SELECT * FROM {table}'
-    cursor.execute(sql)
-    rows = cursor.fetchall()
-    data = [dict(row) for row in rows]
-    with open(f'{table}.json', 'w') as f:
-        json.dump(data, f)
-    cursor.close()
-    connection.close()
-
-
+def generate_sequence(exon_starts=[], exon_ends=[]):
+    """Create a genome array from a list of exon start and end positions."""
+    genome_start = exon_starts[0]
+    genome_end = exon_ends[-1]
+    genome_length = genome_end - genome_start
+    genome = [0] * genome_length
+    
+    for start, end in zip(exon_starts, exon_ends):
+        for i in range(start - genome_start, end - genome_start):
+            genome[i] = 1
+    
+    return genome
