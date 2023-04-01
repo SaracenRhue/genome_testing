@@ -23,7 +23,7 @@ for file in os.listdir('./genome_files'):
         data.pop(0)
     
 
-    genome = {'variants': []}
+    genome = {'name':'', 'variants': []}
     for i in range(len(data)):
         exon_starts = data[i][8][:-1]
         
@@ -32,6 +32,7 @@ for file in os.listdir('./genome_files'):
         exon_ends = [int(i) for i in exon_ends.split(',')]
         econ_count = data[i][7]
         sequence = utils.generate_sequence(exon_starts, exon_ends)
+        genome.update({'name':file})
         genome['variants'].append({
                 'name': data[i][0],
                 'genome_start': exon_starts[0],
