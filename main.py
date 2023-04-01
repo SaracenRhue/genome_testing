@@ -3,9 +3,14 @@ import json
 import utils
 
 
-genomes =[]
+utils.get_genome('Human')
+utils.get_genome('Mouse')
+utils.get_genome('Panda')
 
-for file in os.listdir('./genome_files'):
+
+genomes =[]
+files = os.listdir('./genome_files')
+for file in files:
 # extract the data from the file
     with open(f'./genome_files/{file}', 'r') as f:
         data = f.read()
@@ -38,7 +43,7 @@ for file in os.listdir('./genome_files'):
                 'genome_start': exon_starts[0],
                 'genome_end': exon_ends[-1],
                 'genome_length': exon_ends[-1] - exon_starts[0],
-                'econ_count': econ_count,
+                'exon_count': econ_count,
                 'exon_starts': exon_starts,
                 'exon_ends': exon_ends,
                 'sequence': sequence
@@ -49,4 +54,4 @@ for file in os.listdir('./genome_files'):
 
 
 with open('genomes.json', 'w') as f:
-    json.dump(genomes, f, indent=4)
+    json.dump(genomes, f)
