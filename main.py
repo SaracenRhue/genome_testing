@@ -1,57 +1,48 @@
-import os
-import json
 import utils
+import json
+from pick import pick
+
+data = {}
+connection = utils.connect_to_db('hgcentral')
+dbDb = utils.get_table('dbDb', connection)
+
+options = [item['organism'] for item in dbDb]
 
 
-utils.get_genome('Human')
-utils.get_genome('Mouse')
-utils.get_genome('Panda')
 
+title = 'Select genomes (press SPACE to mark, ENTER to continue): '
+selected = pick(options, title, multiselect=True, min_selection_count=1)
 
-genomes =[]
-files = os.listdir('./genome_files')
-for file in files:
-# extract the data from the file
-    with open(f'./genome_files/{file}', 'r') as f:
-        data = f.read()
-        #create 2d array of the data with each row being a array
-        data = [i.split() for i in data.split('\n')]
-        
+for item in selected:
 
-        for line in data:
-            if line == []:
-                data.remove(line)
-        # remove additional column if it exists
-        if data[0][0] == '#bin':
-            for line in data:
-                    line.pop(0)
-        data.pop(0)
-    
+    name =  item[0]
+    # if str(name).replace(' ', '_').lower()+'.json' in os.listdir('organisms/'):
+    #     continue
+    try:
+        db = utils.find_table_for(name)
+        connection = utils.connect_to_db(db)
+        organism_tables = utils.get_table_names(connection)
+        organism = utils.get_table(organism_tables[0], connection)
+    except: 
+        print(f'Could not find {name}')
+        continue
+    for variant in organism:
+        var_keys = list(variant.keys())
+        for key in var_keys:
+            variant[key] = str(variant[key]).replace("b'", '').replace(",'", '')
+            if ',' in variant[key]:
+                variant[key] = variant[key].split(',')
+            try:
+                if type(variant[key]) == list:
+                    for i in range(len(variant[key])):
+                        variant[key][i] = int(variant[key][i])
+                else:
+                    variant[key] = int(variant[key])
+            except: ValueError 
+            pass
+    print(name)
+    name = str(name).replace(' ', '_').lower()
+    data[name] = organism
 
-    genome = {'name':'', 'variants': []}
-    for i in range(len(data)):
-        exon_starts = data[i][8][:-1]
-        
-        exon_ends = data[i][9][:-1]
-        exon_starts = [int(i) for i in exon_starts.split(',')]
-        exon_ends = [int(i) for i in exon_ends.split(',')]
-        econ_count = data[i][7]
-        sequence = utils.generate_sequence(exon_starts, exon_ends)
-        genome.update({'name':file})
-        genome['variants'].append({
-                'name': data[i][0],
-                'genome_start': exon_starts[0],
-                'genome_end': exon_ends[-1],
-                'genome_length': exon_ends[-1] - exon_starts[0],
-                'exon_count': econ_count,
-                'exon_starts': exon_starts,
-                'exon_ends': exon_ends,
-                'sequence': sequence
-            })
-
-
-    genomes.append(genome)
-
-
-with open('genomes.json', 'w') as f:
-    json.dump(genomes, f)
+with open('data.json', 'w') as f:
+    json.dump(data, f, indent=4)

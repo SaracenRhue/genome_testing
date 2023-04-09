@@ -1,32 +1,57 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+import pymysql
+import json
 
 
-def generate_sequence(exon_starts=[], exon_ends=[]):
-    """Create a genome array from a list of exon start and end positions."""
-    genome_start = exon_starts[0]
-    genome_end = exon_ends[-1]
-    genome_length = genome_end - genome_start
-    genome = [0] * genome_length
-    
-    for start, end in zip(exon_starts, exon_ends):
-        for i in range(start - genome_start, end - genome_start):
-            genome[i] = 1
-    
-    return genome
+def connect_to_db(db='hgcentral'):
+    '''Connect to the MySQL server and return a connection object'''
+    connection = pymysql.connect(
+        host='genome-euro-mysql.soe.ucsc.edu',
+        port=3306,
+        user='genome',
+        db=db,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    return connection
 
 
+def get_table_names(connection):
+    '''Get a list of table names in the current database'''
+    cursor = connection.cursor()
+    sql = 'SHOW TABLES'
+    cursor.execute(sql)
+    tables = cursor.fetchall()
+    cursor.close()
+    result = []
+    for table in tables:
+        result.append(list(table.values())[0])
+    return result
 
-def get_genome(genome):
-    """Get a genome from UCSC."""
-    url = f'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1599516503_mUYmf99zTvPzPmKW4TfEzYaGgYR6&clade=mammal&org={genome}&db=0&hgta_group=genes&hgta_track=refSeqComposite&hgta_table=ncbiRefSeq&hgta_regionType=range&position=&hgta_outputType=primaryTable&hgta_outFileName='
-    op = webdriver.FirefoxOptions()
-    op.add_argument('--headless')
-    driver = webdriver.Firefox(options=op)
-    driver.get(url)
-    driver.implicitly_wait(10)
-    driver.find_element(By.ID, 'hgta_doTopSubmit').click()
-    text = driver.find_element(By.TAG_NAME, 'pre').text
-    driver.quit()
-    with open(f'genome_files/{genome}', 'w') as f:
-        f.write(text)
+def to_json(table, connection):
+    '''Convert a table to JSON'''
+    cursor = connection.cursor()
+    sql = f'SELECT * FROM {table}'
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    data = [dict(row) for row in rows]
+    with open(f'{table}.json', 'w') as f:
+        json.dump(data, f)
+    cursor.close()
+    connection.close()
+
+def get_table(table, connection):
+    '''Get the data from a table'''
+    cursor = connection.cursor()
+    sql = f'SELECT * FROM {table}'
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    data = [dict(row) for row in rows]
+    cursor.close()
+    return data
+
+def find_table_for(organism):
+    '''Find a table in the current database'''
+    connection = connect_to_db('hgcentral')
+    for item in get_table('dbDb', connection):
+        if item['organism'] == organism or item['organism'].lower() == organism:
+            return item['name']
+    return 'none found'
