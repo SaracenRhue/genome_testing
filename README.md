@@ -21,3 +21,8 @@ python main.py
 ### human.py
 
 select a gene from the `Human` table and generaze the binarry array of the gene
+
+## TODO
+
+* select multiple genes of one genome
+* find Events

@@ -4,7 +4,7 @@ import json
 connection = utils.connect_to_db('hgcentral')
 dbDb = utils.get_table('dbDb', connection)
 
-db = utils.find_table_for('Human')
+db = utils.find_tables_for('Human')[0]
 connection = utils.connect_to_db(db)
 genome_tables = utils.get_table_names(connection)
 genome = utils.get_table(genome_tables[0], connection)

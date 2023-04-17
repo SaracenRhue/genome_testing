@@ -17,7 +17,7 @@ for item in selected:
 
     name =  item[0]
     try:
-        db = utils.find_table_for(name)
+        db = utils.find_tables_for(name)[0]
         connection = utils.connect_to_db(db)
         organism_tables = utils.get_table_names(connection)
         organism = utils.get_table(organism_tables[0], connection)

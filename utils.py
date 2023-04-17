@@ -48,13 +48,15 @@ def get_table(table, connection):
     cursor.close()
     return data
 
-def find_table_for(organism):
+def find_tables_for(organism):
     '''Find a table fot a specific genome e.g. "Human" in the current database'''
     connection = connect_to_db('hgcentral')
+    gene_tables = []
     for item in get_table('dbDb', connection):
+        
         if item['organism'] == organism or item['organism'].lower() == organism:
-            return item['name']
-    return 'none found'
+            gene_tables.append(item['name'])
+    return gene_tables
 
 def to_list(gene):
     '''Convert a gene from starts and lengths to binary list'''
