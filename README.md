@@ -8,10 +8,6 @@ pip install pymysql pick
 
 ## Usage
 
-```bash
-python main.py
-```
-
 ### all_genomes.py
 
 * select one or multiple genomes by pressing the space
