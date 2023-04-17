@@ -1,0 +1,36 @@
+    {
+        "bin": 586,
+        "matches": 532,
+        "misMatches": 3,
+        "repMatches": 0,
+        "nCount": 0,
+        "qNumInsert": 0,
+        "qBaseInsert": 0,
+        "tNumInsert": 2,
+        "tBaseInsert": 2156,
+        "strand": "-",
+        "qName": "gnf1h03907_at",
+        "qSize": 535,
+        "qStart": 0,
+        "qEnd": 535,
+        "tName": "chr1",
+        "tSize": 248956422,
+        "tStart": 183694,
+        "tEnd": 186385,
+        "blockCount": 3,
+        "blockSizes": [
+            397,
+            69,
+            69
+        ],
+        "qStarts": [
+            0,
+            397,
+            466
+        ],
+        "tStarts": [
+            183694,
+            185490,
+            186316
+        ]
+    }

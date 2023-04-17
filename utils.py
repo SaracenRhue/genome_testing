@@ -55,3 +55,25 @@ def find_table_for(organism):
         if item['organism'] == organism or item['organism'].lower() == organism:
             return item['name']
     return 'none found'
+
+def to_list(gene):
+    '''Convert a gene from starts and lengths to binary list'''
+    gene_start = gene['tStart']
+    gene_end = gene['tEnd']
+    exon_starts = gene['tStarts']
+    exon_lengths = gene['blockSizes']
+    if type(exon_starts) == int:
+        exon_starts = [exon_starts]
+    if type(exon_lengths) == int:
+        exon_lengths = [exon_lengths]
+
+    gene_length = gene_end - gene_start
+    gene_array = [0] * gene_length
+
+    for i, exon_start in enumerate(exon_starts):
+        exon_length = exon_lengths[i]
+        for j in range(exon_start, exon_start + exon_length):
+            if gene_start <= j < gene_end:
+                gene_array[j - gene_start] = 1
+
+    return gene_array
