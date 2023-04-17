@@ -49,7 +49,7 @@ def get_table(table, connection):
     return data
 
 def find_table_for(organism):
-    '''Find a table in the current database'''
+    '''Find a table fot a specific genome e.g. "Human" in the current database'''
     connection = connect_to_db('hgcentral')
     for item in get_table('dbDb', connection):
         if item['organism'] == organism or item['organism'].lower() == organism:
