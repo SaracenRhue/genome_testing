@@ -24,20 +24,9 @@ for item in selected:
     except: 
         print(f'Could not find {name}')
         continue
-    for variant in organism:
-        var_keys = list(variant.keys())
-        for key in var_keys:
-            variant[key] = str(variant[key]).replace("b'", '').replace(",'", '')
-            if ',' in variant[key]:
-                variant[key] = variant[key].split(',')
-            try:
-                if type(variant[key]) == list:
-                    for i in range(len(variant[key])):
-                        variant[key][i] = int(variant[key][i])
-                else:
-                    variant[key] = int(variant[key])
-            except: ValueError 
-            pass
+
+    organism = [utils.format_gene(gene) for gene in organism]
+    
     print(name)
     name = str(name).replace(' ', '_').lower()
     data[name] = organism

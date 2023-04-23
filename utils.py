@@ -24,6 +24,7 @@ def get_table_names(connection):
     result = []
     for table in tables:
         result.append(list(table.values())[0])
+    print(f'Found {len(result)} tables for this genome')
     return result
 
 def to_json(table, connection):
@@ -56,9 +57,11 @@ def find_tables_for(organism):
         
         if item['organism'] == organism or item['organism'].lower() == organism:
             gene_tables.append(item['name'])
+
+    print(f'Found {len(gene_tables)} tables for {organism}: {gene_tables}')
     return gene_tables
 
-def to_list(gene):
+def get_array(gene):
     '''Convert a gene from starts and lengths to binary list'''
     gene_start = gene['tStart']
     gene_end = gene['tEnd']
@@ -72,10 +75,29 @@ def to_list(gene):
     gene_length = gene_end - gene_start
     gene_array = [0] * gene_length
 
-    for i, exon_start in enumerate(exon_starts):
-        exon_length = exon_lengths[i]
-        for j in range(exon_start, exon_start + exon_length):
-            if gene_start <= j < gene_end:
-                gene_array[j - gene_start] = 1
+    for index, exon_start in enumerate(exon_starts):
+        exon_length = exon_lengths[index]
+        for i in range(exon_start, exon_start + exon_length):
+            if gene_start <= i < gene_end:
+                gene_array[i - gene_start] = 1
 
     return gene_array
+
+
+def format_gene(gene):
+    '''Format gene data into a dictionary with ints and lists for castable strings'''
+    var_keys = list(gene.keys())
+    for key in var_keys:
+        gene[key] = str(gene[key]).replace("b'", '').replace(",'", '')
+        if ',' in gene[key]:
+            gene[key] = gene[key].split(',')
+        try:
+            if type(gene[key]) == list:
+                for i in range(len(gene[key])):
+                    gene[key][i] = int(gene[key][i])
+            else:
+                gene[key] = int(gene[key])
+        except: ValueError 
+        pass
+
+    return gene
