@@ -23,3 +23,6 @@ select a gene from the `Human` table and generaze the binarry array of the gene
 * select multiple genes of one genome
 * find Events
 
+### ideen
+
+* zu klein auf handy => web anwendeng => docker?

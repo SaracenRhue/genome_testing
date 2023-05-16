@@ -61,27 +61,6 @@ def find_tables_for(organism):
     print(f'Found {len(gene_tables)} tables for {organism}: {gene_tables}')
     return gene_tables
 
-def get_array(gene):
-    '''Convert a gene from starts and lengths to binary list'''
-    gene_start = gene['tStart']
-    gene_end = gene['tEnd']
-    exon_starts = gene['tStarts']
-    exon_lengths = gene['blockSizes']
-    if type(exon_starts) == int:
-        exon_starts = [exon_starts]
-    if type(exon_lengths) == int:
-        exon_lengths = [exon_lengths]
-
-    gene_length = gene_end - gene_start
-    gene_array = [0] * gene_length
-
-    for index, exon_start in enumerate(exon_starts):
-        exon_length = exon_lengths[index]
-        for i in range(exon_start, exon_start + exon_length):
-            if gene_start <= i < gene_end:
-                gene_array[i - gene_start] = 1
-
-    return gene_array
 
 
 def format_gene(gene):
@@ -101,3 +80,41 @@ def format_gene(gene):
         pass
 
     return gene
+
+
+
+def create_matrix(variants):
+    # Determine the length of the longest variant
+    longest_variant_length = max(
+        variant['txEnd'] - variant['txStart'] for variant in variants
+    )
+
+    # Determine the earliest start point of all variants
+    earliest_start = min(
+        variant['txStart'] for variant in variants
+    )
+
+    # Create matrix
+    matrix = []
+    for variant in variants:
+        if type(variant['exonStarts']) == int:
+            variant['exonStarts'] = [variant['exonStarts']]
+        if type(variant['exonEnds']) == int:
+            variant['exonEnds'] = [variant['exonEnds']]
+        # Initialize an array filled with zeros
+        variant_array = [0] * (longest_variant_length + earliest_start)
+
+        for i in range(len(variant['exonStarts'])):
+            # Offset the start and end points by the earliest start point
+            exon_start = variant['exonStarts'][i] - earliest_start
+            exon_end = variant['exonEnds'][i] - earliest_start
+
+            for j in range(exon_start, exon_end):
+                variant_array[j] = 1
+
+        matrix.append(variant_array)
+
+    return matrix
+
+
+
